@@ -12,17 +12,14 @@ class ParkingLotCard extends StatelessWidget {
     return Center(
       child: Stack(
         children: [
-          SizedBox(
-            width: double.infinity,
-            height: 200, // Set a finite height
+          Positioned.fill(
             child: Image.network(
-              parkingLot.image ?? '',
+              parkingLot.image,
               fit: BoxFit.cover,
             ),
           ),
           Container(
             width: double.infinity,
-            height: 200, // Match the height of the SizedBox
             color: Colors.black.withOpacity(0.5),
           ),
           Positioned(
@@ -33,7 +30,7 @@ class ParkingLotCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  parkingLot.name ?? '',
+                  parkingLot.name,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,

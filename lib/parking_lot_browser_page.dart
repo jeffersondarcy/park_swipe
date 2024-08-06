@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'graphql/queries.dart';
@@ -59,14 +60,16 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
 
           parkingLots.addAll(newParkingLots);
 
-          return ListView.builder(
-            itemCount: parkingLots.length,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ParkingLotCard(parkingLot: parkingLots[index]),
-              );
-            },
+          return CardSwiper(
+            allowedSwipeDirection:
+                AllowedSwipeDirection.symmetric(horizontal: true),
+            numberOfCardsDisplayed: 1,
+            maxAngle: 10,
+            isLoop: false,
+            cardsCount: newParkingLots.length,
+            cardBuilder:
+                (context, index, percentThresholdX, percentThresholdY) =>
+                    ParkingLotCard(parkingLot: newParkingLots[index]),
           );
         },
       ),
