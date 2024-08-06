@@ -22,14 +22,14 @@ class ParkingLot {
   // Deserialize from JSON
   factory ParkingLot.fromJson(Map<String, dynamic> json) {
     return ParkingLot(
-      address: json['address'],
-      id: json['id'],
-      image: json['image'],
-      liveDate: json['live_date'],
-      name: json['name'],
-      size: json['size'],
-      status: json['status'],
-      type: json['type'],
+      address: json['address'] ?? '',
+      id: json['id'] ?? '',
+      image: json['image'] ?? '',
+      liveDate: json['live_date'] ?? '',
+      name: json['name'] ?? '',
+      size: json['size'] ?? 0,
+      status: json['status'] ?? '',
+      type: json['type'] ?? '',
     );
   }
 

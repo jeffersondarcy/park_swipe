@@ -13,7 +13,7 @@ class ParkingLotBrowserPage extends StatefulWidget {
 }
 
 class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
-  final int limit = 3;
+  final int limit = 20;
   int offset = 0;
 
   @override
@@ -45,17 +45,9 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
           }
 
           List parkingLotsData = result.data?['getAllParkingLots'] ?? [];
-          List<ParkingLot> parkingLots = parkingLotsData.map((data) {
-            return ParkingLot(
-              address: data['address'],
-              id: data['id'],
-              image: data['image'],
-              liveDate: data['live_date'],
-              name: data['name'],
-              size: data['size'],
-              status: data['status'],
-              type: data['type'],
-            );
+          List<ParkingLot> parkingLots =
+              parkingLotsData.map<ParkingLot>((data) {
+            return ParkingLot.fromJson(data);
           }).toList();
 
           return ListView.builder(
