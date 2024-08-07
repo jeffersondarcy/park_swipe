@@ -8,9 +8,11 @@ class ParkingLotSwiper extends StatelessWidget {
   const ParkingLotSwiper({
     super.key,
     required this.parkingLots,
+    this.onEnd,
   });
 
   final List<ParkingLot> parkingLots;
+  final CardSwiperOnEnd? onEnd;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class ParkingLotSwiper extends StatelessWidget {
       maxAngle: 10,
       isLoop: false,
       cardsCount: parkingLots.length,
+      onEnd: onEnd,
       cardBuilder: (context, index, percentThresholdX, percentThresholdY) =>
           ParkingLotCard(parkingLot: parkingLots[index]),
     );

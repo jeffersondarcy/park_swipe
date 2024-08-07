@@ -17,32 +17,48 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
   int offset = 0;
   List<ParkingLot> allParkingLots = [];
   List<ParkingLot> newParkingLots = [];
+  bool _isInitialized = false;
 
-  void _fetchMore(FetchMore? fetchMore) {
-    if (fetchMore != null) {
-      fetchMore(FetchMoreOptions(
-        variables: {
-          'limit': limit,
-          'offset': offset + limit,
-        },
-        updateQuery: (previousResultData, fetchMoreResultData) {
-          final List<dynamic> newParkingLotsData =
-              fetchMoreResultData?['getAllParkingLots'] ?? [];
-          final List<dynamic> allParkingLotsData =
-              List.from(previousResultData?['getAllParkingLots'] ?? [])
-                ..addAll(newParkingLotsData);
+  Future<void> _fetchMore(FetchMore? fetchMore) async {
+    if (fetchMore == null) {
+      return;
+    }
 
-          setState(() {
-            offset += limit;
-            newParkingLots = parkingLotsDataToList(newParkingLotsData);
-            allParkingLots.addAll(newParkingLots);
-          });
+    offset += limit;
+    final QueryResult result = await fetchMore(FetchMoreOptions(
+      variables: {
+        'limit': limit,
+        'offset': offset,
+      },
+      updateQuery: (previousResultData, fetchMoreResultData) {
+        final List<dynamic> newParkingLotsData =
+            fetchMoreResultData?['getAllParkingLots'] ?? [];
 
-          return {
-            'getAllParkingLots': allParkingLotsData,
-          };
-        },
-      ));
+        return {
+          'getAllParkingLots': newParkingLotsData,
+        };
+      },
+    ));
+
+    _setParkingLots(result);
+  }
+
+  void _setParkingLots(QueryResult result) {
+    setState(() {
+      newParkingLots =
+          parkingLotsDataToList(result.data?['getAllParkingLots'] ?? []);
+
+      allParkingLots.addAll(newParkingLots);
+    });
+  }
+
+  void _initParkingLots(QueryResult result) {
+    if (!_isInitialized) {
+      newParkingLots =
+          parkingLotsDataToList(result.data?['getAllParkingLots'] ?? []);
+
+      allParkingLots = [...newParkingLots];
+      _isInitialized = true;
     }
   }
 
@@ -74,14 +90,13 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
             );
           }
 
-          newParkingLots =
-              parkingLotsDataToList(result.data?['getAllParkingLots'] ?? []);
-
-          allParkingLots.addAll(newParkingLots);
+          _initParkingLots(result);
 
           return Stack(
             children: [
-              ParkingLotSwiper(parkingLots: newParkingLots),
+              ParkingLotSwiper(
+                  parkingLots: newParkingLots,
+                  onEnd: () => _fetchMore(fetchMore)),
               Positioned(
                 bottom: 16.0,
                 right: 16.0,
