@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:park_swipe/parking_lot_swiper.dart';
 
 import 'graphql/queries.dart';
 import 'models/parking_lot.dart';
-import 'parking_lot_card.dart';
 
 class ParkingLotBrowserPage extends StatefulWidget {
   const ParkingLotBrowserPage({super.key});
@@ -16,12 +15,35 @@ class ParkingLotBrowserPage extends StatefulWidget {
 class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
   final int limit = 5;
   int offset = 0;
-  List<ParkingLot> parkingLots = [];
+  List<ParkingLot> allParkingLots = [];
+  List<ParkingLot> newParkingLots = [];
 
-  void _loadMoreResults() {
-    setState(() {
-      offset += limit;
-    });
+  void _fetchMore(FetchMore? fetchMore) {
+    if (fetchMore != null) {
+      fetchMore(FetchMoreOptions(
+        variables: {
+          'limit': limit,
+          'offset': offset + limit,
+        },
+        updateQuery: (previousResultData, fetchMoreResultData) {
+          final List<dynamic> newParkingLotsData =
+              fetchMoreResultData?['getAllParkingLots'] ?? [];
+          final List<dynamic> allParkingLotsData =
+              List.from(previousResultData?['getAllParkingLots'] ?? [])
+                ..addAll(newParkingLotsData);
+
+          setState(() {
+            offset += limit;
+            newParkingLots = parkingLotsDataToList(newParkingLotsData);
+            allParkingLots.addAll(newParkingLots);
+          });
+
+          return {
+            'getAllParkingLots': allParkingLotsData,
+          };
+        },
+      ));
+    }
   }
 
   @override
@@ -52,31 +74,32 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
             );
           }
 
-          List parkingLotsData = result.data?['getAllParkingLots'] ?? [];
-          List<ParkingLot> newParkingLots =
-              parkingLotsData.map<ParkingLot>((data) {
-            return ParkingLot.fromJson(data);
-          }).toList();
+          newParkingLots =
+              parkingLotsDataToList(result.data?['getAllParkingLots'] ?? []);
 
-          parkingLots.addAll(newParkingLots);
+          allParkingLots.addAll(newParkingLots);
 
-          return CardSwiper(
-            allowedSwipeDirection:
-                AllowedSwipeDirection.symmetric(horizontal: true),
-            numberOfCardsDisplayed: 1,
-            maxAngle: 10,
-            isLoop: false,
-            cardsCount: newParkingLots.length,
-            cardBuilder:
-                (context, index, percentThresholdX, percentThresholdY) =>
-                    ParkingLotCard(parkingLot: newParkingLots[index]),
+          return Stack(
+            children: [
+              ParkingLotSwiper(parkingLots: newParkingLots),
+              Positioned(
+                bottom: 16.0,
+                right: 16.0,
+                child: FloatingActionButton(
+                  onPressed: () => _fetchMore(fetchMore),
+                  child: const Icon(Icons.add),
+                ),
+              ),
+            ],
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _loadMoreResults,
-        child: const Icon(Icons.add),
-      ),
     );
   }
+}
+
+List<ParkingLot> parkingLotsDataToList(List parkingLotsData) {
+  return parkingLotsData.map<ParkingLot>((data) {
+    return ParkingLot.fromJson(data);
+  }).toList();
 }
