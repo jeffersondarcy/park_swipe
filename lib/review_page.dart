@@ -54,8 +54,22 @@ class ParkingLotItem extends StatelessWidget {
           ],
         ),
         subtitle: Text(parkingLot.address),
-        trailing: Text('Rating: $userRating'),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Rating: '),
+            _getRatingIcon(userRating),
+          ],
+        ),
       ),
     );
+  }
+}
+
+Icon _getRatingIcon(Rating rating) {
+  if (rating == Rating.good) {
+    return const Icon(Icons.thumb_up, color: Colors.green);
+  } else {
+    return const Icon(Icons.thumb_down, color: Colors.red);
   }
 }

@@ -64,11 +64,11 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
   }
 
   void _rateGood(String parkingLotId) {
-    _rateParkingLot(parkingLotId, Rating.Good);
+    _rateParkingLot(parkingLotId, Rating.good);
   }
 
   void _rateBad(String parkingLotId) {
-    _rateParkingLot(parkingLotId, Rating.Bad);
+    _rateParkingLot(parkingLotId, Rating.bad);
   }
 
   void _setParkingLots(QueryResult result) {
@@ -113,9 +113,12 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
         builder: (QueryResult result,
             {VoidCallback? refetch, FetchMore? fetchMore}) {
           if (result.hasException) {
+            return Container();
+            /*
             return Center(
               child: Text(result.exception.toString()),
             );
+             */
           }
 
           if (result.isLoading && result.data == null) {
@@ -128,12 +131,18 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
 
           return Stack(
             children: [
-              ParkingLotSwiper(
+              if (newParkingLots.isNotEmpty)
+                ParkingLotSwiper(
                   key: _key1,
                   parkingLots: newParkingLots,
                   onEnd: () => _fetchMore(fetchMore),
                   onSwipeLeft: _rateBad,
-                  onSwipeRight: _rateGood),
+                  onSwipeRight: _rateGood,
+                )
+              else
+                const Center(
+                  child: Text('no more parking lots'),
+                ),
               Positioned(
                 bottom: 48.0, // Adjusted to sit higher
                 right: 48.0, // Adjusted to not be in the corner

@@ -1,4 +1,4 @@
 enum Rating {
-  Good,
-  Bad,
+  good,
+  bad,
 }
