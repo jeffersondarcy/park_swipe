@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:park_swipe/parking_lot_swiper.dart';
+import 'package:park_swipe/types.dart';
 
 import 'graphql/queries.dart';
 import 'models/parking_lot.dart';
@@ -17,6 +18,7 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
   int offset = 0;
   List<ParkingLot> allParkingLots = [];
   List<ParkingLot> newParkingLots = [];
+  Map<String, Rating> userRatings = {};
   bool _isInitialized = false;
 
   Future<void> _fetchMore(FetchMore? fetchMore) async {
@@ -41,6 +43,18 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
     ));
 
     _setParkingLots(result);
+  }
+
+  void _rateParkingLot(String parkingLotId, Rating rating) {
+    userRatings[parkingLotId] = rating;
+  }
+
+  void _rateGood(String parkingLotId) {
+    _rateParkingLot(parkingLotId, Rating.Good);
+  }
+
+  void _rateBad(String parkingLotId) {
+    _rateParkingLot(parkingLotId, Rating.Bad);
   }
 
   void _setParkingLots(QueryResult result) {
@@ -96,7 +110,9 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
             children: [
               ParkingLotSwiper(
                   parkingLots: newParkingLots,
-                  onEnd: () => _fetchMore(fetchMore)),
+                  onEnd: () => _fetchMore(fetchMore),
+                  onSwipeLeft: _rateBad,
+                  onSwipeRight: _rateGood),
               Positioned(
                 bottom: 16.0,
                 right: 16.0,

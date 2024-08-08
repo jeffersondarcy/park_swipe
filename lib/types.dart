@@ -1,0 +1,4 @@
+enum Rating {
+  Good,
+  Bad,
+}
