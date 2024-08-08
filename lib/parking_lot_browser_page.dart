@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:park_swipe/parking_lot_swiper.dart';
+import 'package:park_swipe/review_page.dart';
 import 'package:park_swipe/types.dart';
 
 import 'graphql/queries.dart';
@@ -19,7 +20,20 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
   List<ParkingLot> allParkingLots = [];
   List<ParkingLot> newParkingLots = [];
   Map<String, Rating> userRatings = {};
+  UniqueKey _key1 = UniqueKey();
+  UniqueKey _key2 = UniqueKey();
+
   bool _isInitialized = false;
+
+  void _reset() {
+    setState(() {
+      userRatings = {};
+      offset = limit;
+      newParkingLots = [...allParkingLots];
+      _key1 = UniqueKey();
+      _key2 = UniqueKey();
+    });
+  }
 
   Future<void> _fetchMore(FetchMore? fetchMore) async {
     if (fetchMore == null) {
@@ -81,6 +95,12 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Parking Lot Browser'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _reset,
+          ),
+        ],
       ),
       body: Query(
         options: QueryOptions(
@@ -109,16 +129,36 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
           return Stack(
             children: [
               ParkingLotSwiper(
+                  key: _key1,
                   parkingLots: newParkingLots,
                   onEnd: () => _fetchMore(fetchMore),
                   onSwipeLeft: _rateBad,
                   onSwipeRight: _rateGood),
               Positioned(
-                bottom: 16.0,
-                right: 16.0,
-                child: FloatingActionButton(
-                  onPressed: () => _fetchMore(fetchMore),
-                  child: const Icon(Icons.add),
+                bottom: 48.0, // Adjusted to sit higher
+                right: 48.0, // Adjusted to not be in the corner
+                child: SizedBox(
+                  width: 150, // Increased width
+                  height: 60, // Increased height
+                  child: FloatingActionButton(
+                    key: _key2,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReviewPage(
+                            parkingLots: allParkingLots,
+                            userRatings: userRatings,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'Review Results',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16), // Increased text size
+                    ),
+                  ),
                 ),
               ),
             ],
