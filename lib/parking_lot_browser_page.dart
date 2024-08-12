@@ -75,6 +75,7 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
     setState(() {
       newParkingLots =
           parkingLotsDataToList(result.data?['getAllParkingLots'] ?? []);
+      _precacheImages(context, newParkingLots);
 
       allParkingLots.addAll(newParkingLots);
     });
@@ -84,6 +85,7 @@ class _ParkingLotBrowserPageState extends State<ParkingLotBrowserPage> {
     if (!_isInitialized) {
       newParkingLots =
           parkingLotsDataToList(result.data?['getAllParkingLots'] ?? []);
+      _precacheImages(context, newParkingLots);
 
       allParkingLots = [...newParkingLots];
       _isInitialized = true;
@@ -182,4 +184,10 @@ List<ParkingLot> parkingLotsDataToList(List parkingLotsData) {
   return parkingLotsData.map<ParkingLot>((data) {
     return ParkingLot.fromJson(data);
   }).toList();
+}
+
+void _precacheImages(BuildContext context, List<ParkingLot> parkingLots) {
+  for (var parkingLot in parkingLots) {
+    precacheImage(NetworkImage(parkingLot.image), context);
+  }
 }
