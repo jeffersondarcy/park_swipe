@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:park_swipe/types.dart';
 
 class Filters extends StatefulWidget {
+  static const includeGoodRatingCheckboxKey = 'includeGoodRatingCheckbox';
+  static const includeBadRatingCheckboxKey = 'includeBadRatingCheckbox';
+  static const groupByRatingCheckboxKey = 'groupByRatingCheckbox';
+  static const sortByNameCheckboxKey = 'sortByNameCheckbox';
+
   final FilterSettings filterSettings;
   final Function(FilterSettings) onFilterSettingsChanged;
 
@@ -45,6 +50,7 @@ class _FiltersState extends State<Filters> {
             ),
             const SizedBox(height: 16),
             CheckboxListTile(
+              key: const Key(Filters.includeGoodRatingCheckboxKey),
               title: const Text('Include entries with rating good'),
               value: _filterSettings.includeGoodRating,
               onChanged: (bool? value) {
@@ -55,6 +61,7 @@ class _FiltersState extends State<Filters> {
               },
             ),
             CheckboxListTile(
+              key: const Key(Filters.includeBadRatingCheckboxKey),
               title: const Text('Include entries with rating bad'),
               value: _filterSettings.includeBadRating,
               onChanged: (bool? value) {
@@ -65,6 +72,7 @@ class _FiltersState extends State<Filters> {
               },
             ),
             CheckboxListTile(
+              key: const Key(Filters.groupByRatingCheckboxKey),
               title: const Text('Group by rating'),
               value: _filterSettings.groupByRating,
               onChanged: (bool? value) {
@@ -75,6 +83,7 @@ class _FiltersState extends State<Filters> {
               },
             ),
             CheckboxListTile(
+              key: const Key(Filters.sortByNameCheckboxKey),
               title: const Text('Sort by name'),
               value: _filterSettings.sortByName,
               onChanged: (bool? value) {

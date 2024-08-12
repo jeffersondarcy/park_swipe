@@ -4,8 +4,21 @@ enum Rating {
 }
 
 class FilterSettings {
-  bool includeGoodRating = true;
-  bool includeBadRating = true;
-  bool groupByRating = false;
-  bool sortByName = false;
+  bool includeGoodRating;
+  bool includeBadRating;
+  bool groupByRating;
+  bool sortByName;
+
+  FilterSettings({
+    this.includeGoodRating = true,
+    this.includeBadRating = true,
+    this.groupByRating = false,
+    this.sortByName = false,
+  });
+
+  FilterSettings.from(FilterSettings other)
+      : includeGoodRating = other.includeGoodRating,
+        includeBadRating = other.includeBadRating,
+        groupByRating = other.groupByRating,
+        sortByName = other.sortByName;
 }
