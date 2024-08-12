@@ -44,9 +44,25 @@ class _ReviewPageState extends State<ReviewPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Review Page'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
+      ),
+      body: Stack(children: [
+        ListView.builder(
+          itemCount: _parkingLots.length,
+          itemBuilder: (context, index) {
+            Rating? userRating = widget.userRatings[_parkingLots[index].id];
+            if (userRating != null) {
+              return ParkingLotItem(
+                parkingLot: _parkingLots[index],
+                userRating: userRating,
+              );
+            }
+            return null;
+          },
+        ),
+        Positioned(
+          bottom: 48.0, // Adjusted to sit higher
+          right: 48.0, // Adjusted to not be in the corner
+          child: FloatingActionButton(
             onPressed: () {
               showDialog(
                 context: context,
@@ -58,22 +74,10 @@ class _ReviewPageState extends State<ReviewPage> {
                 },
               );
             },
+            child: const Icon(Icons.filter_list),
           ),
-        ],
-      ),
-      body: ListView.builder(
-        itemCount: _parkingLots.length,
-        itemBuilder: (context, index) {
-          Rating? userRating = widget.userRatings[_parkingLots[index].id];
-          if (userRating != null) {
-            return ParkingLotItem(
-              parkingLot: _parkingLots[index],
-              userRating: userRating,
-            );
-          }
-          return null;
-        },
-      ),
+        ),
+      ]),
     );
   }
 }
