@@ -5,14 +5,46 @@ import 'package:park_swipe/types.dart';
 import 'filter_functions.dart';
 import 'models/parking_lot.dart';
 
+Widget _defaultListItemBuilder(ParkingLot parkingLot, Rating userRating) {
+  return ParkingLotItem(
+    parkingLot: parkingLot,
+    userRating: userRating,
+  );
+}
+
+// workaround for tests, to avoid using Image.network
+Widget noImageListItemBuilder(ParkingLot parkingLot, Rating userRating) {
+  return Card(
+    child: ListTile(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(parkingLot.name),
+          Text('ID: ${parkingLot.id}', style: const TextStyle(fontSize: 12)),
+        ],
+      ),
+      subtitle: Text(parkingLot.address),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Rating: '),
+          _getRatingIcon(userRating),
+        ],
+      ),
+    ),
+  );
+}
+
 class ReviewPage extends StatefulWidget {
   final List<ParkingLot> parkingLots;
   final Map<String, Rating> userRatings;
+  final Widget Function(ParkingLot, Rating) listItemBuilder;
 
   const ReviewPage({
     super.key,
     required this.parkingLots,
     required this.userRatings,
+    this.listItemBuilder = noImageListItemBuilder,
   });
 
   @override
@@ -51,9 +83,9 @@ class _ReviewPageState extends State<ReviewPage> {
           itemBuilder: (context, index) {
             Rating? userRating = widget.userRatings[_parkingLots[index].id];
             if (userRating != null) {
-              return ParkingLotItem(
-                parkingLot: _parkingLots[index],
-                userRating: userRating,
+              return widget.listItemBuilder(
+                _parkingLots[index],
+                userRating,
               );
             }
             return null;
